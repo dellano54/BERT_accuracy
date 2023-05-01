@@ -36,14 +36,16 @@ model = CustomRobertaModel(
     out_classes=1
 )
 
+class Accuracy():
+  def __init__(self, path):
+    self.data = load(path)
+    self.model = model
+    self.model.load_state_dict(data)
+    
+  def accuracy(self, string1, string2):
+    sen = string1+"<u>"+string2
+    sen = tokenizer(sen, max_length=512, truncation=True, return_tensors='pt')
+    sen = self.model(**sen)
 
-data = load("acc-part-1.pt")
-model.load_state_dict(data)
-
-
-def accuracy(string1, string2):
-  sen = string1+"<u"+string2
-  sen = tokenizer(sen, return_tensors='pt')
-  sen = model(**sen)
-
-  return round(sen.item(), 2)
+    return round(sen.item(), 2)
+    
