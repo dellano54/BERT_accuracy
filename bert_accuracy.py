@@ -42,7 +42,7 @@ model.load_state_dict(data)
 def accuracy(string1, string2):
     sen = string1+"<u>"+string2
     sen = tokenizer(sen, max_length=512, truncation=True, return_tensors='pt')
-    sen = self.model(**sen)
+    sen = model(**sen)
 
     return round(sen.item(), 2)
     
