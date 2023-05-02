@@ -1,4 +1,4 @@
-# BERT-accuracy
+# BERT_accuracy
 Accuracy between two strings using BERT
 
 This accuracy function is made by using roberta-base model
@@ -13,6 +13,6 @@ INSTALLATION:
   
 USAGE:
 ```python
-   from bert-accuracy import accuracy
+   from bert_accuracy import accuracy
    accuracy(string1, string2)
 ```
