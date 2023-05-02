@@ -1,6 +1,7 @@
 from transformers import RobertaModel, RobertaTokenizer
 import torch.nn  as nn
 from torch import load
+import os
 
 tokenizer = RobertaTokenizer.from_pretrained("roberta-base")
 tokenizer.add_tokens(["<u>"])
@@ -36,7 +37,10 @@ model = CustomRobertaModel(
     out_classes=1
 )
 
-data = load("./acc-part-1.pt")
+location = os.path.dirname(__file__)
+location = os.path.join(location, "acc-part-1.pt")
+
+data = load(location)
 model.load_state_dict(data)
     
 def accuracy(string1, string2):
