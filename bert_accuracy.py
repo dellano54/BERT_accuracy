@@ -36,7 +36,7 @@ model = CustomRobertaModel(
     out_classes=1
 )
 
-data = load("acc-part-1.pt")
+data = load("./acc-part-1.pt")
 model.load_state_dict(data)
     
 def accuracy(string1, string2):
