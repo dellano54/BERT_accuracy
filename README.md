@@ -8,7 +8,7 @@ We use roberta to generate the similarity between two strings
 
 INSTALLATION:
 
-  DOWNLOAD: https://raw.githubusercontent.com/dellano54/BERT-accuracy/main/bert_accuracy.py 
+  DOWNLOAD: clone and import the program
   in the current dir and import it
   
 USAGE:
