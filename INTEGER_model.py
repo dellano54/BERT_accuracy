@@ -15,6 +15,7 @@ class Embeddings(nn.Module):
         b, s = x.shape
         x = self.vocab_embedding(x)
         pos = torch.arange(s).repeat(b, 1).to(x.device)
+        pos = self.pos_embedding(pos)
         
         x += pos
 
@@ -44,12 +45,11 @@ class MultiHeadAttention(nn.Module):
     @staticmethod
     def apply_padding_mask(attention_scores, padding_mask):
         padding_mask = padding_mask.unsqueeze(1)  # Shape: [batch_size, 1, seq_length]
-        padding_mask = padding_mask.expand(-1, attention_scores.size(1), -1)  # Shape: [batch_size, seq_length, seq_length]
+        padding_mask = padding_mask.expand(-1, attention_scores.size(2), -1)  # Shape: [batch_size, seq_length, seq_length]
         
         # Replace 1s in padding mask with 0 and 0s with -inf
         padding_mask = padding_mask.masked_fill(padding_mask == 0, float('-1e+9'))  # Mask padded tokens with -inf
         padding_mask = padding_mask.masked_fill(padding_mask == 1, 0) 
-
         # Add the padding mask to attention scores
         masked_attention_scores = attention_scores + padding_mask
         
@@ -89,15 +89,15 @@ class MultiHeadAttention(nn.Module):
 
         attention_scores = (q @ k.transpose(-2, -1)) / math.sqrt(self.h_dim)
 
-        if self.enc:
+        if (self.enc == True) and (mask is not None):
             attention_scores = self.apply_padding_mask(attention_scores, mask)
 
-        else:
+        elif (self.enc == False) and (mask is not None):
             attention_scores = self.apply_look_ahead_mask(attention_scores, v_s)
 
 
         attention_scores = self.drop(attention_scores)
-        x = (attention_scores @ v).transpose(1, 2).contiguous().view(x.shape[0], -1, self.embed_dim)
+        x = (attention_scores @ v).transpose(1, 2).contiguous().view(v_b, -1, self.embed_dim)
 
         x = self.out(x)
 
@@ -118,6 +118,8 @@ class ResAdd(nn.Module):
         x = self.drop(x)
         x = self.act(x)
         x = self.w2(x)
+
+        return x
 
 
 
@@ -200,10 +202,11 @@ class Transformer(nn.Module):
         self.act = nn.GELU()
         self.decoder = nn.Linear(embed_dim, 1)
 
-    def forward(self, x, mask):
+    def forward(self, x, mask=None):
         x = self.emb(x)
         x = self.Encoder(x, mask)
         x = self.act(x)
         x = self.decoder(x)
 
         return x
+    
